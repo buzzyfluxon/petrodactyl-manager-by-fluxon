@@ -15,7 +15,9 @@ Free-tier servers, paid plans, boost perks, and full admin tooling — all from 
 
 <br/>
 
-<img src="assets/headers/features.svg" alt="Features" width="230" />
+<div align="center">
+  <img src="assets/headers/features.svg" alt="Features" width="500" />
+</div>
 
 <br/><br/>
 
@@ -32,7 +34,9 @@ Free-tier servers, paid plans, boost perks, and full admin tooling — all from 
 
 <br/>
 
-<img src="assets/headers/getting-started.svg" alt="Getting Started" width="290" />
+<div align="center">
+  <img src="assets/headers/getting-started.svg" alt="Getting Started" width="500" />
+</div>
 
 <br/><br/>
 
@@ -40,7 +44,7 @@ Free-tier servers, paid plans, boost perks, and full admin tooling — all from 
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/your-username/fluxon.git
+git clone https://github.com/buzzyfluxon/petrodactyl-manager-by-fluxon.git
 cd fluxon
 
 # 2. Install dependencies
@@ -56,7 +60,9 @@ npm start
 
 <br/>
 
-<img src="assets/headers/configuration.svg" alt="Configuration" width="270" />
+<div align="center">
+  <img src="assets/headers/configuration.svg" alt="Configuration" width="500" />
+</div>
 
 <br/><br/>
 
@@ -71,7 +77,9 @@ No code edits needed for a fresh setup — just drop in your IDs and go.
 
 <br/>
 
-<img src="assets/headers/commands.svg" alt="Commands" width="230" />
+<div align="center">
+  <img src="assets/headers/commands.svg" alt="Commands" width="500" />
+</div>
 
 <br/><br/>
 
@@ -90,7 +98,9 @@ No code edits needed for a fresh setup — just drop in your IDs and go.
 
 <br/>
 
-<img src="assets/headers/tech-stack.svg" alt="Tech Stack" width="230" />
+<div align="center">
+  <img src="assets/headers/tech-stack.svg" alt="Tech Stack" width="500" />
+</div>
 
 <br/><br/>
 
