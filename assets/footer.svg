@@ -1,0 +1,16 @@
+<svg width="1200" height="90" viewBox="0 0 1200 90" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fline" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#7c3aed" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#f1c40f" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="ftext" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#f1c40f"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="90" fill="#0d0b14"/>
+  <rect x="0" y="18" width="1200" height="1.5" fill="url(#fline)"/>
+  <text x="600" y="58" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="18" letter-spacing="1.5" fill="url(#ftext)">made with 💜 by flux0n</text>
+</svg>

@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Secrets — never commit your real config
+config.env
+.env
+.env.local
+
+# Runtime data
+data/database/*.sqlite
+data/database/*.sqlite-journal
+
+# Logs
+npm-debug.log*
+*.log
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

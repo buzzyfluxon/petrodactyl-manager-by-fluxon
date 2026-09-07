@@ -1,0 +1,39 @@
+<svg width="1200" height="280" viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d0b14"/>
+      <stop offset="100%" stop-color="#161129"/>
+    </linearGradient>
+    <linearGradient id="text" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="55%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#f1c40f"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M 36 0 L 0 0 0 36" fill="none" stroke="#ffffff" stroke-opacity="0.035" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="280" fill="url(#bg)"/>
+  <rect width="1200" height="280" fill="url(#grid)"/>
+  <ellipse cx="600" cy="140" rx="520" ry="180" fill="url(#glow)"/>
+
+  <!-- corner accents -->
+  <circle cx="90" cy="60" r="3" fill="#7c3aed" opacity="0.8"/>
+  <circle cx="1110" cy="220" r="3" fill="#f1c40f" opacity="0.8"/>
+  <path d="M60 40 L60 80 M40 60 L80 60" stroke="#7c3aed" stroke-width="1.5" opacity="0.5"/>
+  <path d="M1140 200 L1140 240 M1120 220 L1160 220" stroke="#f1c40f" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- wordmark -->
+  <text x="600" y="150" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="92" font-weight="800" letter-spacing="6" fill="url(#text)">FLUXON</text>
+
+  <!-- underline -->
+  <rect x="440" y="178" width="320" height="3" rx="1.5" fill="url(#text)" opacity="0.8"/>
+
+  <!-- tagline -->
+  <text x="600" y="215" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="21" letter-spacing="2" fill="#c9c3e0">PTERODACTYL SERVER MANAGER FOR DISCORD</text>
+</svg>
