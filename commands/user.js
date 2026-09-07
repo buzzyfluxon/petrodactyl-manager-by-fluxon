@@ -61,10 +61,15 @@ module.exports = {
 
     if (subcommand === "new") {
       const userId = message.author.id;
-      const username = message.author.username
+      const sanitizedBase = message.author.username
         .toLowerCase()
-        .replace(/[^a-z0-9_]/g, "_")
-        .substring(0, 16);
+        .replace(/[^a-z0-9._-]/g, "_")
+        .replace(/^[^a-z0-9]+|[^a-z0-9]+$/g, "")
+        .substring(0, 16)
+        .replace(/[^a-z0-9]+$/g, "");
+      const username = sanitizedBase.length >= 3
+        ? sanitizedBase
+        : `user${userId.slice(-8)}`;
       const email = `${username}_${userId.slice(-4)}@deskhost.fun`;
 
       const existing = await db.getObject(userId);
@@ -109,8 +114,13 @@ module.exports = {
       }
 
       const password = await new Password().generatePassword(12);
+      const firstName = message.author.username
+        .replace(/[^\p{L}\p{N} '.-]/gu, "")
+        .trim()
+        .substring(0, 191) || username;
+
       try {
-        await panel.addUser(email, username, message.author.username, "User", password);
+        await panel.addUser(email, username, firstName, "User", password);
         await db.setUser(userId, email, username);
 
         try {
@@ -181,7 +191,20 @@ module.exports = {
           flags: MessageFlags.IsComponentsV2,
         });
       } catch (err) {
-        console.error("[user new] Error:", err);
+        const apiErrors = err && err.response && err.response.data && err.response.data.errors;
+        console.error("[user new] Error:", err.response ? JSON.stringify(err.response.data, null, 2) : err);
+
+        let detail;
+        if (Array.isArray(apiErrors) && apiErrors.length) {
+          detail = apiErrors
+            .map(e => `${e.meta && e.meta.source_field ? `${e.meta.source_field}: ` : ""}${e.detail || e.code}`)
+            .join("\n");
+        } else if (err.response && err.response.status === 403) {
+          detail = "The Application API key does not have permission to create users. Check the key's role in the panel's Application API settings.";
+        } else {
+          detail = err.message;
+        }
+
         return message.reply({
           components: [
             new ContainerBuilder()
@@ -191,9 +214,7 @@ module.exports = {
               )
               .addSeparatorComponents(new SeparatorBuilder().setSpacing(1))
               .addTextDisplayComponents(
-                new TextDisplayBuilder().setContent(
-                  `\`\`\`\n${err.message}\n\`\`\`\nMake sure your Application API key has user creation permissions.`
-                )
+                new TextDisplayBuilder().setContent(`\`\`\`\n${detail}\n\`\`\``)
               )
           ],
           flags: MessageFlags.IsComponentsV2,
