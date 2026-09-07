@@ -1,0 +1,31 @@
+<svg width="760" height="76" viewBox="0 0 760 76" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg0" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d0b14"/>
+      <stop offset="100%" stop-color="#161129"/>
+    </linearGradient>
+    <linearGradient id="text0" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="70%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#f1c40f"/>
+    </linearGradient>
+    <linearGradient id="ring0" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0.5" y="0.5" width="759" height="75" rx="14" fill="url(#bg0)" stroke="#2a2440" stroke-width="1"/>
+
+  <circle cx="46" cy="38" r="22" fill="none" stroke="url(#ring0)" stroke-width="1.6" opacity="0.9"/>
+  <g transform="translate(46,38)" stroke="url(#ring0)" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="-10" y="-10" width="8" height="8" rx="1.5"/>
+    <rect x="2" y="-10" width="8" height="8" rx="1.5"/>
+    <rect x="-10" y="2" width="8" height="8" rx="1.5"/>
+    <rect x="2" y="2" width="8" height="8" rx="1.5"/>
+  </g>
+
+  <text x="86" y="46" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="26" font-weight="800" letter-spacing="1.5" fill="url(#text0)">FEATURES</text>
+
+  <rect x="86" y="56" width="46" height="2.5" rx="1.25" fill="url(#text0)" opacity="0.75"/>
+</svg>

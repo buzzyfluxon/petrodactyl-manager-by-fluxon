@@ -15,22 +15,26 @@ Free-tier servers, paid plans, boost perks, and full admin tooling — all from 
 
 <br/>
 
-## ✨ Features
+<img src="assets/headers/features.svg" alt="Features" width="230" />
+
+<br/><br/>
 
 | | |
 |---|---|
-| 🖥️ **Server Lifecycle** | Users create, view, and manage their own Pterodactyl servers with `>server` |
-| 💎 **Paid Plans** | Fixed-tier (`>paid`) or fully custom (`>plan`) paid servers, with automatic protection & expiry |
-| 🚀 **Booster Perks** | Automatic resource perks for server boosters |
-| 🔔 **Smart Logging** | Separate, color-coded log channels for free vs. paid server activity |
-| 🧹 **Auto Cleanup** | Inactivity detection with grace periods and DM warnings before deletion |
-| 🔑 **Role-Gated Access** | Fine-grained owner / role-based permissions for sensitive commands |
-| 🌍 **Multi-language** | Built-in translation manager with several locales included |
-| ⚙️ **Fully Configurable** | Every channel, role, and emoji ID lives in one `.env` file |
+| <img src="assets/icons/server.svg" width="22" /> **Server Lifecycle** | Users create, view, and manage their own Pterodactyl servers with `>server` |
+| <img src="assets/icons/gem.svg" width="22" /> **Paid Plans** | Fixed-tier (`>paid`) or fully custom (`>plan`) paid servers, with automatic protection & expiry |
+| <img src="assets/icons/rocket.svg" width="22" /> **Booster Perks** | Automatic resource perks for server boosters |
+| <img src="assets/icons/bell.svg" width="22" /> **Smart Logging** | Separate, color-coded log channels for free vs. paid server activity |
+| <img src="assets/icons/broom.svg" width="22" /> **Auto Cleanup** | Inactivity detection with grace periods and DM warnings before deletion |
+| <img src="assets/icons/key.svg" width="22" /> **Role-Gated Access** | Fine-grained owner / role-based permissions for sensitive commands |
+| <img src="assets/icons/globe.svg" width="22" /> **Multi-language** | Built-in translation manager with several locales included |
+| <img src="assets/icons/gear.svg" width="22" /> **Fully Configurable** | Every channel, role, and emoji ID lives in one `.env` file |
 
 <br/>
 
-## 🚀 Getting Started
+<img src="assets/headers/getting-started.svg" alt="Getting Started" width="290" />
+
+<br/><br/>
 
 **Requirements:** Node.js 18+, a Discord bot application, and a Pterodactyl Panel with API access.
 
@@ -52,7 +56,9 @@ npm start
 
 <br/>
 
-## ⚙️ Configuration
+<img src="assets/headers/configuration.svg" alt="Configuration" width="270" />
+
+<br/><br/>
 
 All configuration lives in `config.env`. See [`.env.example`](.env.example) for the full list — grouped into:
 
@@ -65,7 +71,9 @@ No code edits needed for a fresh setup — just drop in your IDs and go.
 
 <br/>
 
-## 📋 Commands
+<img src="assets/headers/commands.svg" alt="Commands" width="230" />
+
+<br/><br/>
 
 | Command | Description |
 |---|---|
@@ -82,7 +90,9 @@ No code edits needed for a fresh setup — just drop in your IDs and go.
 
 <br/>
 
-## 🛠️ Tech Stack
+<img src="assets/headers/tech-stack.svg" alt="Tech Stack" width="230" />
+
+<br/><br/>
 
 Built with [discord.js](https://discord.js.org), [Pterodactyl](https://pterodactyl.io)'s Application & Client APIs, and [quick.db](https://npmjs.com/package/quick.db) for lightweight persistence.
 
