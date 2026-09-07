@@ -44,7 +44,7 @@ Free-tier servers, paid plans, boost perks, and full admin tooling — all from 
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/your-username/fluxon.git
+git clone https://github.com/buzzyfluxon/petrodactyl-manager-by-fluxon.git
 cd fluxon
 
 # 2. Install dependencies
