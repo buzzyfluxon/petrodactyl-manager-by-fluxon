@@ -1,6 +1,3 @@
-// © flux0n. All rights reserved.
-﻿
-
 const {
   ContainerBuilder, TextDisplayBuilder,
   SeparatorBuilder, MessageFlags,
@@ -24,6 +21,15 @@ const PURPLE  = 0x7c3aed;
 const API  = () => process.env.PTERODACTYL_API_URL;
 const KEY  = () => process.env.PTERODACTYL_API_KEY;
 const hdrs = () => ({ Authorization: `Bearer ${KEY()}`, Accept: "application/json", "Content-Type": "application/json" });
+
+const ACTIVITY_KEY = "auto_cleanup_activity";
+
+async function markActivity(uuid, patch) {
+  if (!uuid) return;
+  const activity = (await db.getObject(ACTIVITY_KEY)) || {};
+  activity[uuid] = { ...(activity[uuid] || {}), ...patch };
+  await db.setObject(ACTIVITY_KEY, activity);
+}
 
 function c(title, body, color = PURPLE) {
   return new ContainerBuilder()
@@ -60,12 +66,14 @@ async function getServerByIdentifier(identifier) {
   return res.data.data.find(s => s.attributes.identifier === identifier) || null;
 }
 
-async function suspendServer(numericId) {
+async function suspendServer(numericId, uuid) {
   await axios.post(`${API()}/api/application/servers/${numericId}/suspend`, {}, { headers: hdrs() });
+  await markActivity(uuid, { suspendedAt: Date.now() });
 }
 
-async function unsuspendServer(numericId) {
+async function unsuspendServer(numericId, uuid) {
   await axios.post(`${API()}/api/application/servers/${numericId}/unsuspend`, {}, { headers: hdrs() });
+  await markActivity(uuid, { lastOnline: Date.now(), suspendedAt: null });
 }
 
 async function deleteServer(numericId) {
@@ -150,7 +158,7 @@ module.exports = {
           const results = [];
           for (const s of r.servers) {
             try {
-              await suspendServer(s.attributes.id);
+              await suspendServer(s.attributes.id, s.attributes.uuid);
               results.push(`\`${s.attributes.name}\` — suspended`);
             } catch (e) {
               results.push(`\`${s.attributes.name}\` — failed: ${e.response?.status ?? e.message}`);
@@ -172,7 +180,7 @@ module.exports = {
 
         const srv = await getServerByIdentifier(r.identifier);
         if (!srv) return loading.edit({ content: null, components: [c("Not Found", `No server found with ID \`${r.identifier}\`.`)], flags: MessageFlags.IsComponentsV2 });
-        await suspendServer(srv.attributes.id);
+        await suspendServer(srv.attributes.id, srv.attributes.uuid);
         return loading.edit({
           content: null,
           components: [c("Server Suspended", `\`${srv.attributes.name}\`  \`${r.identifier}\` has been suspended.`)],
@@ -191,7 +199,7 @@ module.exports = {
           const results = [];
           for (const s of r.servers) {
             try {
-              await unsuspendServer(s.attributes.id);
+              await unsuspendServer(s.attributes.id, s.attributes.uuid);
               results.push(`\`${s.attributes.name}\` — unsuspended`);
             } catch (e) {
               results.push(`\`${s.attributes.name}\` — failed: ${e.response?.status ?? e.message}`);
@@ -213,7 +221,7 @@ module.exports = {
 
         const srv = await getServerByIdentifier(r.identifier);
         if (!srv) return loading.edit({ content: null, components: [c("Not Found", `No server found with ID \`${r.identifier}\`.`)], flags: MessageFlags.IsComponentsV2 });
-        await unsuspendServer(srv.attributes.id);
+        await unsuspendServer(srv.attributes.id, srv.attributes.uuid);
         return loading.edit({
           content: null,
           components: [c("Server Unsuspended", `\`${srv.attributes.name}\`  \`${r.identifier}\` has been unsuspended.`)],

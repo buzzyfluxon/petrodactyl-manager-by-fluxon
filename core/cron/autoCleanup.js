@@ -1,4 +1,3 @@
-// © flux0n. All rights reserved.
 const { EmbedBuilder } = require("discord.js");
 const { DataBaseInterface } = require("../dataBaseInterface");
 var CronJob = require('cron').CronJob;
@@ -126,6 +125,11 @@ module.exports = {
                 console.error(`[autoCleanup] Failed to delete server ${identifier}:`, err.message);
               }
             }
+            continue;
+          }
+
+          if (entry && entry.suspendedAt) {
+            activity[uuid] = { lastOnline: now };
             continue;
           }
 
