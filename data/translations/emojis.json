@@ -1,27 +1,10 @@
 {
-  "emoji_error": { "id": "", "emoji": "⛔" },
-  "emoji_scribble": { "id": "", "emoji": "✍️" },
-  "emoji_shopping_cart": { "id": "", "emoji": "🛒" },
-  "emoji_blackjackengine_const_suits_const_ranks": { "id": "", "emoji": "♠️" },
-  "emoji_blackjackengine_const_suits_const_ranks_1": { "id": "", "emoji": "♥️" },
-  "emoji_blackjackengine_const_suits_const_ranks_2": { "id": "", "emoji": "♦️" },
-  "emoji_blackjackengine_const_suits_const_ranks_3": { "id": "", "emoji": "♣️" },
-  "emoji_blackjackengine_settitle_title_await_safe": { "id": "", "emoji": "🎲" },
-  "emoji_arrow_right": { "id": "", "emoji": "➡️" },
-  "emoji_arrow_down_right": { "id": "", "emoji": "↪️"},
-  "emoji_cloud": { "id": "", "emoji": "☁️" }, 
-  "emoji_logo": { "id": "", "emoji": "🔶"},
-  "emoji_clock": { "id": "", "emoji": "🕐"},
-  "emoji_play": { "id": "", "emoji": "▶️"},
-  "emoji_stop": { "id": "", "emoji": "⏹️"},
-  "emoji_rotate": { "id": "", "emoji": "🔁"},
-  "emoji_file": { "id": "", "emoji": "📁"},
-  "emoji_clipboard": { "id": "", "emoji": "📋"},
-  "emoji_trash": { "id": "", "emoji": "🗑️"},
-  "emoji_creditcard": { "id": "", "emoji": "💳"},
-  "emoji_warning": { "id": "", "emoji": "⚠️"},
-  "emoji_glass": { "id": "", "emoji": "🔎"},
-  "emoji_confirm": { "id": "", "emoji": "✅"},
-  "emoji_deny": { "id": "", "emoji": "❌"},
-  "emoji_gift": { "id": "", "emoji": "🎁"}
+    "emoji_logo": {
+        "id": "",
+        "emoji": "🔶"
+    },
+    "emoji_arrow_down_right": {
+        "id": "",
+        "emoji": "↪️"
+    }
 }

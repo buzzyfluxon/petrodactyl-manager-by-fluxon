@@ -86,13 +86,17 @@ No code edits needed for a fresh setup — just drop in your IDs and go.
 | Command | Description |
 |---|---|
 | `>server` | Create and manage free-tier servers |
+| `>servers` | Browse & search every server on the panel, filterable by type (owner only) |
 | `>plan` | Create custom-spec paid servers (owner / plan role only) |
 | `>paid` | Apply a fixed paid tier to a server, new or existing |
 | `>linkaccount` | Link a Discord user to a panel account |
 | `>useonly` | Restrict bot usage to a specific channel |
 | `>status` | Live node status embed |
 | `>stats` | Bot & server statistics |
+| `>lavalink` | Live Lavalink node connection status |
 | `>user` | Look up a linked user's account |
+| `>np` | Manage no-prefix command access for users (owner only) |
+| `>eval` | Evaluate raw JS in the bot's context (owner only) |
 | `>admin` / `>owner` | Administrative controls |
 | `>help` | Full command reference |
 
