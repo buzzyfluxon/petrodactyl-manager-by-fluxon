@@ -7,6 +7,7 @@ const EGG_IDS = {
   paper: 5, mc: 5, minecraft: 5, java: 5,
   csgo: 6, ark: 7, tf2: 8, gmod: 11, rust: 14,
   mumble: 12, teamspeak: 13, ts3: 13,
+  lavalink: Number(process.env.LAVALINK_EGG_ID) || 17,
 };
 
 function findEggId(type) {

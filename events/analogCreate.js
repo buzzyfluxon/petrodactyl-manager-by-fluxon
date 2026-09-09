@@ -110,7 +110,6 @@ const ALIAS_MAP = {
   suspend:   { cmd: "admin", inject: "suspend"   },
   unsuspend: { cmd: "admin", inject: "unsuspend" },
   delete:    { cmd: "admin", inject: "delete"    },
-  servers:   { cmd: "admin", inject: "servers"   },
   stats:     { cmd: "stats", inject: null        },
   owners:    { cmd: "owner", inject: "list"      },
   eval:      { cmd: "eval",  inject: null        },

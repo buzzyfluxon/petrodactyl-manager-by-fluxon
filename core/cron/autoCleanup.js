@@ -133,13 +133,19 @@ module.exports = {
             continue;
           }
 
-          let currentState = null;
+          let currentState;
           try {
             const usage = await panel.liveServerRessourceUsage(identifier);
-            currentState = usage ? usage.attributes.current_state : null;
-          } catch (_) {  }
+            currentState = usage.attributes.current_state;
+          } catch (err) {
+            console.error(`[autoCleanup] Failed to read resource usage for ${identifier}:`, err.message);
+            if (!entry) {
+              activity[uuid] = { lastOnline: now };
+            }
+            continue;
+          }
 
-          if (currentState === "running") {
+          if (currentState === "running" || currentState === "starting") {
             activity[uuid] = { lastOnline: now };
             continue;
           }

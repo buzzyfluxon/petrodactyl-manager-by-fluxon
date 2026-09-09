@@ -1,9 +1,4 @@
 {
-  "name": "fluxon",
-  "version": "1.0.0",
-  "description": "A Discord bot for managing Pterodactyl Panel servers — free & paid tiers, plans, boosts, and more.",
-  "author": "flux0n",
-  "license": "MIT",
   "dependencies": {
     "axios": "^1.15.0",
     "better-sqlite3": "^12.4.1",

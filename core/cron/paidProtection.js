@@ -2,6 +2,7 @@
 const { EmbedBuilder } = require("discord.js");
 const { DataBaseInterface } = require("../dataBaseInterface");
 const { getPlan } = require("../paidPlans");
+const { withKeyLock } = require("../keyLock");
 var CronJob = require('cron').CronJob;
 
 const database = new DataBaseInterface();
@@ -57,6 +58,7 @@ module.exports = {
       async function () {
         console.log("[paidProtection] Checking paid-protected servers...");
 
+        await withKeyLock(PAID_LIST_KEY, async () => {
         const list = await getPaidList();
         const now = Date.now();
         const remaining = [];
@@ -67,13 +69,19 @@ module.exports = {
           const planLabel = planInfo ? planInfo.label : "your";
 
           let serverIdentifier;
+          let lookupFailed = false;
           try {
             serverIdentifier = await panel.getServerIdentifier(uuid);
           } catch (_) {
             serverIdentifier = null;
+            lookupFailed = true;
           }
 
           if (!serverIdentifier) {
+            // Keep the entry if the lookup errored (transient API issue) so
+            // protection isn't silently lost; only drop it once we're sure
+            // the panel genuinely has no such server anymore.
+            if (lookupFailed) remaining.push(entry);
             continue;
           }
 
@@ -131,6 +139,7 @@ module.exports = {
         }
 
         await savePaidList(remaining);
+        });
       },
       null,
       true,

@@ -1,6 +1,7 @@
 const {
   ContainerBuilder, TextDisplayBuilder,
   SeparatorBuilder, MessageFlags,
+  ActionRowBuilder, ButtonBuilder, ButtonStyle,
 } = require("discord.js");
 
 const { PanelManager } = require("../core/panelManager");
@@ -66,6 +67,83 @@ async function getServerByIdentifier(identifier) {
   return res.data.data.find(s => s.attributes.identifier === identifier) || null;
 }
 
+const ALLSERVERS_PAGE_SIZE = 5;
+
+async function getAllPanelServersDetailed() {
+  const res = await axios.get(`${API()}/api/application/servers?per_page=10000&include=user`, { headers: hdrs() });
+  return res.data.data.slice().sort((a, b) => a.attributes.id - b.attributes.id);
+}
+
+async function getNodeMap() {
+  const map = {};
+  try {
+    const nodes = await panel.getPanelNodes();
+    for (const n of nodes) map[n.attributes.id] = n.attributes.name;
+  } catch (_) {}
+  return map;
+}
+
+async function getEmailToDiscordMap() {
+  const all = await db.fetchAll();
+  const map = {};
+  for (const entry of all) {
+    const id = entry && entry.id;
+    if (id && /^\d{17,19}$/.test(String(id)) && entry.value && entry.value.e_mail) {
+      map[String(entry.value.e_mail).toLowerCase()] = String(id);
+    }
+  }
+  return map;
+}
+
+function formatServerBlock(s, idx, emailMap, nodeMap) {
+  const a = s.attributes;
+  const ownerEmail = a.relationships?.user?.attributes?.email || null;
+  const discordId = ownerEmail ? emailMap[ownerEmail.toLowerCase()] : null;
+  const ownerLine = discordId
+    ? `<@${discordId}>  \`${ownerEmail}\``
+    : ownerEmail
+      ? `\`${ownerEmail}\` — no linked Discord account`
+      : "Unknown";
+  const nodeName = nodeMap[a.node] || `Node #${a.node}`;
+  const limits = a.limits || {};
+
+  return (
+    `**${idx}. ${a.name}**\n` +
+    `> Server ID: \`${a.id}\`  •  Identifier: \`${a.identifier}\`\n` +
+    `> UUID: \`${a.uuid}\`\n` +
+    `> Owner: ${ownerLine}\n` +
+    `> Node: \`${nodeName}\`  •  Status: \`${a.suspended ? "Suspended" : (a.status || "active")}\`\n` +
+    `> RAM: \`${limits.memory ?? "?"}MB\`  Disk: \`${limits.disk ?? "?"}MB\`  CPU: \`${limits.cpu ?? "?"}%\`  Swap: \`${limits.swap ?? "?"}MB\`\n` +
+    `> Databases: \`${a.feature_limits?.databases ?? 0}\`  Backups: \`${a.feature_limits?.backups ?? 0}\`  Created: \`${new Date(a.created_at).toLocaleDateString()}\``
+  );
+}
+
+function buildAllServersPage(servers, page, totalPages, emailMap, nodeMap, msgId, disabled = false) {
+  const start = page * ALLSERVERS_PAGE_SIZE;
+  const pageServers = servers.slice(start, start + ALLSERVERS_PAGE_SIZE);
+  const body = pageServers
+    .map((s, i) => formatServerBlock(s, start + i + 1, emailMap, nodeMap))
+    .join("\n\n");
+
+  const container = new ContainerBuilder()
+    .setAccentColor(PURPLE)
+    .addTextDisplayComponents(new TextDisplayBuilder().setContent("# All Servers"))
+    .addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# \`${servers.length}\` total  •  Page \`${page + 1}/${totalPages}\``))
+    .addSeparatorComponents(new SeparatorBuilder().setSpacing(1))
+    .addTextDisplayComponents(new TextDisplayBuilder().setContent(body || "No servers found on the panel."));
+
+  if (totalPages > 1) {
+    container.addActionRowComponents(
+      new ActionRowBuilder().addComponents(
+        new ButtonBuilder().setCustomId(`allsrv_prev_${msgId}`).setLabel("◀ Prev").setStyle(ButtonStyle.Secondary).setDisabled(disabled || page === 0),
+        new ButtonBuilder().setCustomId(`allsrv_next_${msgId}`).setLabel("Next ▶").setStyle(ButtonStyle.Secondary).setDisabled(disabled || page >= totalPages - 1)
+      )
+    );
+  }
+
+  return container;
+}
+
 async function suspendServer(numericId, uuid) {
   await axios.post(`${API()}/api/application/servers/${numericId}/suspend`, {}, { headers: hdrs() });
   await markActivity(uuid, { suspendedAt: Date.now() });
@@ -103,18 +181,76 @@ module.exports = {
               "`>admin unsuspend <id>` — Unsuspend a server by ID\n" +
               "`>admin delete @user` — Delete all servers of a user\n" +
               "`>admin delete <id>` — Delete a server by ID\n" +
-              "`>admin servers @user` — List a user's servers"
+              "`>admin servers @user` — List a user's servers\n" +
+              "`>admin allservers` — List every server on the panel with full details"
             ))
         ],
         flags: MessageFlags.IsComponentsV2,
       });
     }
 
-    if (!target) return message.reply({ content: "Usage: `>admin <suspend|unsuspend|delete|servers> <@user or serverid>`" });
+    if (sub !== "allservers" && !target) {
+      return message.reply({ content: "Usage: `>admin <suspend|unsuspend|delete|servers> <@user or serverid>`" });
+    }
 
-    const loading = await message.reply({ content: "Processing..." });
+    const loading = await message.reply({ content: sub === "allservers" ? "Fetching every server on the panel..." : "Processing..." });
 
     try {
+
+      if (sub === "allservers") {
+        let servers, nodeMap, emailMap;
+        try {
+          [servers, nodeMap, emailMap] = await Promise.all([
+            getAllPanelServersDetailed(),
+            getNodeMap(),
+            getEmailToDiscordMap(),
+          ]);
+        } catch (err) {
+          return loading.edit({
+            content: null,
+            components: [c("Error", `\`\`\`\n${err.response?.status ?? ""} ${err.message}\n\`\`\``)],
+            flags: MessageFlags.IsComponentsV2,
+          });
+        }
+
+        const totalPages = Math.max(1, Math.ceil(servers.length / ALLSERVERS_PAGE_SIZE));
+        let page = 0;
+
+        const sentMsg = await loading.edit({
+          content: null,
+          components: [buildAllServersPage(servers, page, totalPages, emailMap, nodeMap, loading.id)],
+          flags: MessageFlags.IsComponentsV2,
+        });
+
+        if (totalPages <= 1) return;
+
+        const collector = sentMsg.createMessageComponentCollector({
+          filter: (i) => i.user.id === message.author.id,
+          time: 300000,
+        });
+
+        collector.on("collect", async (interaction) => {
+          if (interaction.customId === `allsrv_prev_${loading.id}`) page = Math.max(0, page - 1);
+          else if (interaction.customId === `allsrv_next_${loading.id}`) page = Math.min(totalPages - 1, page + 1);
+          else return;
+
+          await interaction.update({
+            components: [buildAllServersPage(servers, page, totalPages, emailMap, nodeMap, loading.id)],
+            flags: MessageFlags.IsComponentsV2,
+          });
+        });
+
+        collector.on("end", async () => {
+          try {
+            await sentMsg.edit({
+              components: [buildAllServersPage(servers, page, totalPages, emailMap, nodeMap, loading.id, true)],
+              flags: MessageFlags.IsComponentsV2,
+            });
+          } catch (_) {}
+        });
+
+        return;
+      }
 
       if (sub === "servers") {
         const r = await resolveTarget(target);

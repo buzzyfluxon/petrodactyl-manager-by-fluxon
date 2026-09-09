@@ -44,6 +44,8 @@ module.exports = {
 
             if(["overrideFalse", "overrideTrue"].includes(interaction.customId)) return;
 
+            if (interaction.customId.startsWith("servers_")) return;
+
             let button = client.buttons.get(interaction.customId);
             try {
                 await button.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, database, t, giftCodeManager, emojiManager);
@@ -54,6 +56,7 @@ module.exports = {
         } else if (interaction.isStringSelectMenu()) {
 
             if (["singleUseCodeSelect"].includes(interaction.customId)) return;
+            if (interaction.customId.startsWith("servers_")) return;
             let selectMenu = client.selectMenus.get(interaction.customId);
             try {
                 await selectMenu.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, database, t, giftCodeManager, emojiManager);
@@ -62,6 +65,7 @@ module.exports = {
             }
 
         } else if (interaction.isModalSubmit()) {
+            if (interaction.customId.startsWith("servers_")) return;
             let modal = client.modals.get(interaction.customId);
             try {
             await modal.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, database, t, giftCodeManager, emojiManager);

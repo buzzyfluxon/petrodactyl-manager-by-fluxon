@@ -219,13 +219,11 @@ class PanelManager {
     }
 
     this.liveServerRessourceUsage = async function (serverId) {
-      try {
-        this.serverUsage = await this.axios.get(
-          `/api/client/servers/${serverId}/resources`,
-          "client"
-        );
-        return this.serverUsage.data;
-      } catch (e) { return undefined }
+      this.serverUsage = await this.axios.get(
+        `/api/client/servers/${serverId}/resources`,
+        "client"
+      );
+      return this.serverUsage.data;
     };
 
     this.getServerInfo = async function (serverIdentifier) {

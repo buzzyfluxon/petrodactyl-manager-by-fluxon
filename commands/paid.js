@@ -12,6 +12,7 @@ const { getPlan, formatPlanTable } = require("../core/paidPlans");
 const { PanelManager } = require("../core/panelManager");
 const { WebhookLogger } = require("../core/webhookLogger");
 const { findEggId } = require("../core/serverTypes");
+const { withKeyLock } = require("../core/keyLock");
 const axios = require("axios");
 
 const db = new DataBaseInterface();
@@ -33,10 +34,18 @@ const NEW_SERVER_TYPE = "nodejs";
 const NEW_SERVER_DEFAULTS = { swap: 0, io: 500, databases: 5, backups: 5 };
 
 const PAID_LIST_KEY = "paid_protection_list";
+const ACTIVITY_KEY = "auto_cleanup_activity";
 
 const API = () => process.env.PTERODACTYL_API_URL;
 const KEY = () => process.env.PTERODACTYL_API_KEY;
 const hdrs = () => ({ Authorization: `Bearer ${KEY()}`, Accept: "application/json", "Content-Type": "application/json" });
+
+async function markActivity(uuid, patch) {
+  if (!uuid) return;
+  const activity = (await db.getObject(ACTIVITY_KEY)) || {};
+  activity[uuid] = { ...(activity[uuid] || {}), ...patch };
+  await db.setObject(ACTIVITY_KEY, activity);
+}
 
 async function findServersByName(name) {
   const res = await axios.get(`${API()}/api/application/servers?per_page=10000`, { headers: hdrs() });
@@ -147,26 +156,35 @@ module.exports = {
       }
 
       const server = matches[0];
-      const { uuid, identifier, id, name } = server.attributes;
+      const { uuid, identifier, id, name, suspended } = server.attributes;
 
       await resizeServer(id, plan);
+
+      let wasUnsuspended = false;
+      if (suspended) {
+        await axios.post(`${API()}/api/application/servers/${id}/unsuspend`, {}, { headers: hdrs() });
+        await markActivity(uuid, { lastOnline: Date.now(), suspendedAt: null });
+        wasUnsuspended = true;
+      }
 
       const now = Date.now();
       const protectedUntil = now + PROTECTION_DAYS * 86400000;
 
-      const list = await getPaidList();
-      const existing = list.find((e) => e.uuid === uuid);
-      const isRenewal = !!existing;
+      const isRenewal = await withKeyLock(PAID_LIST_KEY, async () => {
+        const list = await getPaidList();
+        const existing = list.find((e) => e.uuid === uuid);
 
-      if (existing) {
-        existing.protectedUntil = protectedUntil;
-        existing.userId = discordId;
-        existing.guildId = message.guild.id;
-        existing.plan = planArg.toLowerCase();
-      } else {
-        list.push({ uuid, identifier, userId: discordId, guildId: message.guild.id, protectedUntil, plan: planArg.toLowerCase() });
-      }
-      await db.setObject(PAID_LIST_KEY, list);
+        if (existing) {
+          existing.protectedUntil = protectedUntil;
+          existing.userId = discordId;
+          existing.guildId = message.guild.id;
+          existing.plan = planArg.toLowerCase();
+        } else {
+          list.push({ uuid, identifier, userId: discordId, guildId: message.guild.id, protectedUntil, plan: planArg.toLowerCase() });
+        }
+        await db.setObject(PAID_LIST_KEY, list);
+        return !!existing;
+      });
 
       let roleGranted = false;
       try {
@@ -186,7 +204,8 @@ module.exports = {
             `Specs         \`${plan.ram}MB RAM\`  \`${plan.disk}MB Disk\`  \`${plan.cpu}% CPU\`\n` +
             `Protected Until   ${fmtDate(protectedUntil)}\n` +
             `Grace Period      ${GRACE_DAYS} days after that before deletion\n` +
-            `Role              ${roleGranted ? "Granted" : "Failed to grant — assign it manually"}\n\n` +
+            `Role              ${roleGranted ? "Granted" : "Failed to grant — assign it manually"}\n` +
+            `Suspension        ${wasUnsuspended ? "Was suspended — automatically unsuspended" : "Was already active"}\n\n` +
             "-# Also exempt from the inactivity auto-cleanup for the duration.",
             GREEN
           )
@@ -250,9 +269,11 @@ module.exports = {
       const now = Date.now();
       const protectedUntil = now + PROTECTION_DAYS * 86400000;
 
-      const list = await getPaidList();
-      list.push({ uuid, identifier, userId: discordId, guildId: message.guild.id, protectedUntil, plan: planArg.toLowerCase() });
-      await db.setObject(PAID_LIST_KEY, list);
+      await withKeyLock(PAID_LIST_KEY, async () => {
+        const list = await getPaidList();
+        list.push({ uuid, identifier, userId: discordId, guildId: message.guild.id, protectedUntil, plan: planArg.toLowerCase() });
+        await db.setObject(PAID_LIST_KEY, list);
+      });
 
       let roleGranted = false;
       try {
